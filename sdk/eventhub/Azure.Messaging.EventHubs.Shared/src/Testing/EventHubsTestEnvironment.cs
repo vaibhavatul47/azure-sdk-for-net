@@ -62,7 +62,7 @@ namespace Azure.Messaging.EventHubs.Tests
         ///
         /// <value>The connection string will be determined by creating an ephemeral Event Hubs namespace for the test execution.</value>
         ///
-        public string EventHubsConnectionString => ActiveEventHubsNamespace.Value.ConnectionString;
+        public string EventHubsConnectionString => "Endpoint=sb://localhost;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SOME_KEY_VAL;UseDevelopmentEmulator=true";// ActiveEventHubsNamespace.Value.ConnectionString;
 
         /// <summary>
         ///   The name of the Event Hubs namespace to be used for Live tests.

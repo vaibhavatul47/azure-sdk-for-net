@@ -12,6 +12,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="$(MSBuildThisfileDirectory)Testing\EmulatorEventhubConfig.cs" Link="SharedSource\Perf\%(Filename)%(Extension)" />
+    <Compile Include="$(MSBuildThisfileDirectory)Testing\EmulatorEventhubController.cs" Link="SharedSource\Perf\%(Filename)%(Extension)" />
     <Compile Include="$(MSBuildThisfileDirectory)Testing\EventGenerator.cs" Link="SharedSource\Perf\%(Filename)%(Extension)" />
     <Compile Include="$(MSBuildThisfileDirectory)Testing\EventHubScope.cs" Link="SharedSource\Perf\%(Filename)%(Extension)" />
     <Compile Include="$(MSBuildThisfileDirectory)Testing\EventHubsTestEnvironment.cs" Link="SharedSource\Perf\%(Filename)%(Extension)" />

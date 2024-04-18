@@ -20,7 +20,7 @@ namespace Azure.Messaging.EventHubs.Tests
     public sealed class EventHubScope : IAsyncDisposable
     {
         /// <summary>The manager for common live test resource operations.</summary>
-        private static readonly LiveResourceManager ResourceManager = new LiveResourceManager();
+        //private static readonly LiveResourceManager ResourceManager = new LiveResourceManager();
 
         /// <summary>Serves as a sentinel flag to denote when the instance has been disposed.</summary>
         private volatile bool _disposed = false;
@@ -81,7 +81,8 @@ namespace Azure.Messaging.EventHubs.Tests
 
             try
             {
-                await ResourceManager.DeleteEventHubAsync(EventHubName).ConfigureAwait(false);
+                await Task.CompletedTask;
+                //await ResourceManager.DeleteEventHubAsync(EventHubName).ConfigureAwait(false);
             }
             catch
             {
@@ -105,7 +106,10 @@ namespace Azure.Messaging.EventHubs.Tests
         /// <param name="caller">The name of the calling method; this is intended to be populated by the runtime.</param>
         ///
         public static Task<EventHubScope> CreateAsync(int partitionCount,
-                                                      [CallerMemberName] string caller = "") => CreateAsync(partitionCount, Enumerable.Empty<string>(), caller);
+                                                      [CallerMemberName] string caller = "")
+        {
+            return CreateAsync(partitionCount, Enumerable.Empty<string>(), caller);
+        }
 
         /// <summary>
         ///   Performs the tasks needed to get or create a new Event Hub instance with the requested
@@ -154,11 +158,16 @@ namespace Azure.Messaging.EventHubs.Tests
         ///
         /// <returns>The <see cref="EventHubScope" /> that will be used in a given test run.</returns>
         ///
-        private static Task<EventHubScope> BuildScopeFromExistingEventHub() => Task.FromResult(
+        private static Task<EventHubScope> BuildScopeFromExistingEventHub()
+        {
+            int[] ints = new int[10];
+            int k = ints[0] * 2;
+            return Task.FromResult(
             new EventHubScope(
                 EventHubsTestEnvironment.Instance.EventHubNameOverride,
-                ResourceManager.QueryEventHubConsumerGroupNames(EventHubsTestEnvironment.Instance.EventHubNameOverride),
+                new List<string> {"$Default"},
                 shouldRemoveEventHubAtScopeCompletion: false));
+        }
 
         /// <summary>
         ///   Performs the tasks needed to create a new Event Hub instance with the requested
@@ -183,12 +192,12 @@ namespace Azure.Messaging.EventHubs.Tests
 
             var eventHubName = $"{ Guid.NewGuid().ToString("D").Substring(0, 13) }-{ caller }";
             var groups = consumerGroups?.ToList() ?? new List<string>();
-            var eventHub = await ResourceManager.CreateEventHubAsync(eventHubName, partitionCount, groups).ConfigureAwait(false);
-
+            //var eventHub = await ResourceManager.CreateEventHubAsync(eventHubName, partitionCount, groups).ConfigureAwait(false);
+            await EmulatorEventhubController.CreateEventHubOnExternalHost(eventHubName, groups, partitionCount);
             // There is a race condition in which ARM has created the new Event Hub but it is not yet visible to the Event Hubs
             // service.  Introduce a short delay to allow for the service to get access to the new resource.
 
-            await Task.Delay(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            //await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
 
             // The default consumer group is always present; include it as part of the scope.
 
