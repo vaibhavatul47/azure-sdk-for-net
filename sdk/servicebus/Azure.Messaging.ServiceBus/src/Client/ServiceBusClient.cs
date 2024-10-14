@@ -224,22 +224,23 @@ namespace Azure.Messaging.ServiceBus
             string fullyQualifiedNamespace,
             object credential,
             ServiceBusClientOptions options)
+            : this("Endpoint=sb://127.0.0.1;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;", options)
         {
-            Logger.ClientCreateStart(typeof(ServiceBusClient), fullyQualifiedNamespace);
-            _options = options?.Clone() ?? new ServiceBusClientOptions();
-            Identifier = string.IsNullOrEmpty(_options.Identifier) ? DiagnosticUtilities.GenerateIdentifier(fullyQualifiedNamespace) : _options.Identifier;
+            //Logger.ClientCreateStart(typeof(ServiceBusClient), fullyQualifiedNamespace);
+            //_options = options?.Clone() ?? new ServiceBusClientOptions();
+            //Identifier = string.IsNullOrEmpty(_options.Identifier) ? DiagnosticUtilities.GenerateIdentifier(fullyQualifiedNamespace) : _options.Identifier;
 
-            if (Uri.TryCreate(fullyQualifiedNamespace, UriKind.Absolute, out var uri))
-            {
-                fullyQualifiedNamespace = uri.Host;
-            }
+            //if (Uri.TryCreate(fullyQualifiedNamespace, UriKind.Absolute, out var uri))
+            //{
+            //    fullyQualifiedNamespace = uri.Host;
+            //}
 
-            Connection = ServiceBusConnection.CreateWithCredential(
-                fullyQualifiedNamespace,
-                credential,
-                _options);
-            TransportType = _options.TransportType;
-            Logger.ClientCreateComplete(typeof(ServiceBusClient), Identifier);
+            //Connection = ServiceBusConnection.CreateWithCredential(
+            //    fullyQualifiedNamespace,
+            //    credential,
+            //    _options);
+            //TransportType = _options.TransportType;
+            //Logger.ClientCreateComplete(typeof(ServiceBusClient), Identifier);
         }
 
         /// <summary>

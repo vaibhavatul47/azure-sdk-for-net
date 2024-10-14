@@ -145,7 +145,7 @@ namespace Azure.Messaging.ServiceBus.Tests
         {
             var signature = new SharedAccessSignature(signatureAudience, SharedAccessKeyName, SharedAccessKey,
                 TimeSpan.FromMinutes(validDurationMinutes));
-            return $"Endpoint={ParsedConnectionString.Endpoint};EntityPath={entityName};SharedAccessSignature={signature.Value}";
+            return $"Endpoint={ParsedConnectionString.Endpoint};EntityPath={entityName};SharedAccessSignature={signature.Value};UseDevelopmentEmulator=true;";
         }
     }
 }
