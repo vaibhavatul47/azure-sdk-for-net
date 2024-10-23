@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Xml;
 using Azure.Messaging.ServiceBus.Administration;
 using Azure.Messaging.ServiceBus.Tests.Infrastructure;
 
@@ -52,6 +53,7 @@ namespace Azure.Messaging.ServiceBus.Tests
                                                              [CallerMemberName] string caller = "")
         {
             // Create a new queue specific to the scope being created.
+            EmulatorServiceBusConfig.NamespaceConfigObject.QueueProperties queueProperties = new EmulatorServiceBusConfig.NamespaceConfigObject.QueueProperties() { EnablePartitioning = enablePartitioning, RequiresSession = enableSession };
 
             caller = (caller.Length < 16) ? caller : caller.Substring(0, 15);
 
@@ -65,17 +67,23 @@ namespace Azure.Messaging.ServiceBus.Tests
             if (lockDuration.HasValue)
             {
                 queueOptions.LockDuration = lockDuration.Value;
+                queueProperties.LockDuration = XmlConvert.ToString(lockDuration.Value);
             }
 
             if (defaultMessageTimeToLive.HasValue)
             {
                 queueOptions.DefaultMessageTimeToLive = defaultMessageTimeToLive.Value;
+                queueProperties.DefaultMessageTimeToLive = XmlConvert.ToString(defaultMessageTimeToLive.Value);
             }
 
             var client = useSecondaryNamespace ? s_secondaryAdminClient : s_adminClient;
 
             //QueueProperties queueProperties = await client.CreateQueueAsync(queueOptions);
-            await EmulatorServiceBusController.CreateServiceBusOnExternalHost(new List<EmulatorServiceBusConfig.NamespaceConfigObject.ServiceBusEntityDetails>() { new EmulatorServiceBusConfig.NamespaceConfigObject.ServiceBusEntityDetails() { Name = queueOptions.Name, Type = EmulatorServiceBusConfig.NamespaceConfigObject.ServiceBusEntityDetails.EmulatorServiceBusEntityType.Queue } });
+            await EmulatorServiceBusController.CreateServiceBusOnExternalHost(
+                new List<EmulatorServiceBusConfig.NamespaceConfigObject.QueueConfig>() {
+                    new EmulatorServiceBusConfig.NamespaceConfigObject.QueueConfig()
+                    { Name = queueOptions.Name ,Properties =queueProperties
+                    } });
             return new QueueScope(queueOptions.Name, true, useSecondaryNamespace);
         }
 
@@ -107,8 +115,8 @@ namespace Azure.Messaging.ServiceBus.Tests
             };
 
             //TopicProperties topicProperties = await s_adminClient.CreateTopicAsync(topicOptions);
-            List<EmulatorServiceBusConfig.NamespaceConfigObject.ServiceBusEntityDetails> enitites = new List<EmulatorServiceBusConfig.NamespaceConfigObject.ServiceBusEntityDetails>() {new EmulatorServiceBusConfig.NamespaceConfigObject.ServiceBusEntityDetails() { Name = topicName, Type = EmulatorServiceBusConfig.NamespaceConfigObject.
-                ServiceBusEntityDetails.EmulatorServiceBusEntityType.Topic } };
+            EmulatorServiceBusConfig.NamespaceConfigObject.TopicConfig  topic = new EmulatorServiceBusConfig.NamespaceConfigObject.TopicConfig() { Name = topicName,Properties = new EmulatorServiceBusConfig.NamespaceConfigObject.TopicProperties() { EnablePartitioning = enablePartitioning} };
+            topic.Subscriptions = new List<EmulatorServiceBusConfig.NamespaceConfigObject.SubscriptionConfig>();
 
             TopicProperties topicProperties = new TopicProperties(topicName);
             var activeSubscriptions = new List<string>();
@@ -120,12 +128,12 @@ namespace Azure.Messaging.ServiceBus.Tests
                     RequiresSession = enableSession
                 };
                 //SubscriptionProperties subscriptionProperties = await s_adminClient.CreateSubscriptionAsync(subscriptionOptions);
-                SubscriptionProperties subscriptionProperties = new SubscriptionProperties(subscriptionOptions);
+                SubscriptionProperties subscriptionProperties = new SubscriptionProperties(subscriptionOptions) { RequiresSession = enableSession};
                 activeSubscriptions.Add(subscriptionProperties.SubscriptionName);
-                enitites.Add(new EmulatorServiceBusConfig.NamespaceConfigObject.ServiceBusEntityDetails() { Name = subscription, Type = EmulatorServiceBusConfig.NamespaceConfigObject.ServiceBusEntityDetails.EmulatorServiceBusEntityType.Subscription, Parent = topicName });
+                topic.Subscriptions.Add(new EmulatorServiceBusConfig.NamespaceConfigObject.SubscriptionConfig() { Name = subscription, Properties = new EmulatorServiceBusConfig.NamespaceConfigObject.SubscriptionProperties() { RequiresSession = enableSession } });
             }
 
-            await EmulatorServiceBusController.CreateServiceBusOnExternalHost(enitites);
+            await EmulatorServiceBusController.CreateServiceBusOnExternalHost(null,new List<EmulatorServiceBusConfig.NamespaceConfigObject.TopicConfig>() { topic});
 
             return new TopicScope(topicProperties.Name, activeSubscriptions, true);
         }
