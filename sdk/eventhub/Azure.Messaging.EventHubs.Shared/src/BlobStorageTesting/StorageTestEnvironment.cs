@@ -47,7 +47,8 @@ namespace Azure.Messaging.EventHubs.Tests
         ///
         /// <value>The connection string will be determined by creating an ephemeral Azure storage account for the test execution.</value>
         ///
-        public string StorageConnectionString => $"DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=SOME_KEY_VAL;BlobEndpoint=http://localhost:10000/devstoreaccount1;";
+        //public string StorageConnectionString => $"DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=SOME_KEY_VAL;BlobEndpoint=http://localhost:10000/devstoreaccount1;";
+        public string StorageConnectionString => "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;";
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="StorageTestEnvironment"/> class.

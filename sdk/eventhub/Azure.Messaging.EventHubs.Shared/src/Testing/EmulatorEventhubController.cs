@@ -82,7 +82,7 @@ namespace Azure.Messaging.EventHubs.Tests
 #endif
 
 #if NET6_0_OR_GREATER
-            HttpClient httpClient = new HttpClient() { BaseAddress = new Uri("http://localhost:8090") };
+            HttpClient httpClient = new HttpClient() { BaseAddress = new Uri("http://localhost:5300") };
             await httpClient.PostAsJsonAsync("/Eventhub/Emulator/Configure", ehRequest);
 #endif
             await Task.Delay(TimeSpan.FromSeconds(3));
